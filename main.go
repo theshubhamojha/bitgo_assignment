@@ -65,8 +65,6 @@ func main() {
 						ID:    allTx[position],
 						Count: int32(len(ancestorSet)),
 					})
-
-					log.Print("found a transaction with ancestors ", "id ", allTx[position], " ancestor ", ancestorSet, " position ", position)
 				}
 			}()
 		}

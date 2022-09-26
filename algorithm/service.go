@@ -66,8 +66,6 @@ func (s *service) BFS(ctx context.Context, transactionID string, transactionBloc
 	}
 
 	list = ancestorList
-
-	log.Print("bfs completed for transaction ", "transaction_id ", transactionID, " total_ancestor ", len(list))
 	return
 }
 
