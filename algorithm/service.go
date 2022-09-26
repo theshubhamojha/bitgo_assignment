@@ -2,9 +2,9 @@ package algorithm
 
 import (
 	"context"
-	"errors"
 	"log"
 	"sort"
+	"sync"
 
 	"github.com/shubhamiitbhu/bitgo.git/dto"
 	"github.com/shubhamiitbhu/bitgo.git/transactions"
@@ -49,19 +49,27 @@ func (s *service) BFS(ctx context.Context, transactionID string, transactionBloc
 			return list, err
 		}
 
+		var wg sync.WaitGroup
 		for _, transaction := range inputTransactions {
-			blockHeight, err := s.transactionService.GetTransactionBlockHeight(ctx, transaction)
-			if err != nil {
-				log.Print("error getting transaction block height", "error", err.Error(), "transaction_id", transaction)
-				return ancestorList, errors.New("error getting transaction block height")
-			}
+			wg.Add(1)
 
-			if transactionBlockHeight == blockHeight {
-				ancestorList = append(ancestorList, transaction)
-				queue = Enqueue(queue, transaction)
-			}
+			trx := transaction
+			go func() {
+				defer wg.Done()
+				blockHeight, err := s.transactionService.GetTransactionBlockHeight(ctx, trx)
+				if err != nil {
+					log.Print("error getting transaction block height", "error", err.Error(), "transaction_id", trx)
+					return
+				}
+
+				if transactionBlockHeight == blockHeight {
+					ancestorList = append(ancestorList, trx)
+					queue = Enqueue(queue, trx)
+				}
+			}()
 		}
 
+		wg.Wait()
 		queue = Dequeue(queue)
 	}
 
