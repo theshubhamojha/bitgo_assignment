@@ -36,7 +36,7 @@ func main() {
 	var ancestoralCount []dto.AncestoralCount
 	var wg sync.WaitGroup
 
-	batchSize := 100
+	batchSize := 400
 
 	startIndex := 0
 	batchNumber := 0
